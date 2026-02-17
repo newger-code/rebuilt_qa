@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Seller Questionnaire — Sidebar v4</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+  *{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',-apple-system,sans-serif;}
+  body{background:#E5E7EB;display:flex;justify-content:center;align-items:flex-start;padding:16px;min-height:100vh;}
+  .frame{width:340px;height:700px;background:#fff;border:1px solid #CBD5E1;border-radius:6px;
+    display:flex;flex-direction:column;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.06);}
+
+  .hdr{padding:4px 10px;border-bottom:1px solid #E2E8F0;background:#F8FAFC;flex-shrink:0;
+    display:flex;align-items:center;justify-content:space-between;}
+  .hdr-t{font-size:12px;font-weight:700;color:#1E293B;}
+  .hdr-stat{font-size:10px;color:#94A3B8;}
+
+  /* ── Gauge ── */
+  .gauge{flex-shrink:0;padding:6px 10px 4px;border-bottom:1px solid #E2E8F0;background:#F8FAFC;}
+  .gauge-inputs{display:flex;gap:5px;margin-bottom:4px;}
+  .gauge-inputs label{font-size:9px;color:#64748B;font-weight:600;text-transform:uppercase;letter-spacing:.3px;}
+  .gauge-inputs input{display:block;width:100%;padding:2px 5px;border:1px solid #CBD5E1;border-radius:3px;
+    font-size:11px;font-weight:600;outline:none;font-family:inherit;margin-top:1px;}
+  .gauge-inputs input:focus{border-color:#2563EB;box-shadow:0 0 0 1px rgba(37,99,235,.15);}
+  .gauge-bar{position:relative;height:12px;border-radius:6px;overflow:visible;
+    background:linear-gradient(90deg,#EF4444 0%,#F97316 25%,#FBBF24 45%,#34D399 70%,#059669 100%);}
+  .gauge-thumb{position:absolute;top:-2px;width:6px;height:16px;background:#1E293B;border-radius:3px;
+    transition:left 500ms cubic-bezier(.25,.46,.45,.94);box-shadow:0 0 0 2px #fff,0 1px 3px rgba(0,0,0,.2);}
+  .gauge-letters{display:flex;justify-content:space-between;margin-top:1px;padding:0 2px;}
+  .gauge-letters span{font-size:8px;font-weight:800;color:#94A3B8;width:16px;text-align:center;}
+  .gauge-letters span.active{color:#1E293B;font-size:9px;}
+  .gauge-bottom{display:flex;align-items:baseline;justify-content:space-between;margin-top:2px;}
+  .gauge-grade{font-size:20px;font-weight:800;line-height:1;}
+  .gA{color:#059669;}.gB{color:#10B981;}.gC{color:#EAB308;}.gD{color:#F97316;}.gF{color:#EF4444;}
+  .gauge-desc{font-size:10px;color:#64748B;margin-left:5px;}
+  .gauge-cost{text-align:right;}
+  .gauge-cost-val{font-size:13px;font-weight:800;color:#1E293B;}
+  .gauge-cost-lbl{font-size:8px;color:#94A3B8;text-transform:uppercase;letter-spacing:.3px;}
+
+  /* ── Dispo badge (centered between grade + rehab) ── */
+  .dispo-badge{text-align:center;position:relative;cursor:default;}
+  .dispo-badge-val{font-size:14px;font-weight:800;color:#7C3AED;line-height:1;}
+  .dispo-badge-lbl{font-size:8px;color:#94A3B8;text-transform:uppercase;letter-spacing:.3px;}
+  .dispo-tip{display:none;position:absolute;bottom:100%;left:50%;transform:translateX(-50%);
+    background:#1E293B;color:#fff;font-size:9px;padding:4px 8px;border-radius:4px;white-space:nowrap;
+    margin-bottom:4px;z-index:10;pointer-events:none;}
+  .dispo-tip::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);
+    border:4px solid transparent;border-top-color:#1E293B;}
+  .dispo-badge:hover .dispo-tip{display:block;}
+
+  /* ── Override toggles (Tear Down / Gut2Studs) ── */
+  .ovr-row{display:flex;gap:4px;margin-bottom:4px;}
+  .ovr-tog{flex:1;display:flex;align-items:center;justify-content:center;gap:4px;
+    padding:3px 0;border:1.5px solid #CBD5E1;border-radius:4px;cursor:pointer;
+    font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.3px;
+    color:#64748B;background:#fff;transition:all 120ms;user-select:none;}
+  .ovr-tog:hover{border-color:#94A3B8;background:#F8FAFC;}
+  .ovr-tog.on-td{border-color:#DC2626;background:#FEF2F2;color:#DC2626;}
+  .ovr-tog.on-g2s{border-color:#D97706;background:#FFFBEB;color:#D97706;}
+  .ovr-tog .dot{width:8px;height:8px;border-radius:50%;border:1.5px solid #CBD5E1;transition:all 120ms;}
+  .ovr-tog.on-td .dot{background:#DC2626;border-color:#DC2626;}
+  .ovr-tog.on-g2s .dot{background:#D97706;border-color:#D97706;}
+  .ovr-sel{margin-bottom:4px;}
+  .ovr-sel select{width:100%;padding:2px 5px;border:1px solid #CBD5E1;border-radius:3px;
+    font-size:10px;font-weight:600;font-family:inherit;outline:none;color:#334155;background:#fff;}
+  .ovr-sel select:focus{border-color:#2563EB;}
+  .ovr-sel label{font-size:8px;color:#94A3B8;font-weight:600;text-transform:uppercase;letter-spacing:.3px;}
+
+  /* ── Scrollable body ── */
+  .body{flex:1;overflow-y:auto;overflow-x:hidden;}
+  .body::-webkit-scrollbar{width:3px;}
+  .body::-webkit-scrollbar-thumb{background:#CBD5E1;border-radius:2px;}
+
+  /* ── Sections ── */
+  .sec{border-bottom:1px solid #E2E8F0;}
+  .sec-h{padding:5px 10px;display:flex;align-items:center;justify-content:space-between;
+    cursor:pointer;background:#1E3A5F;user-select:none;position:sticky;top:0;z-index:2;}
+  .sec-h:hover{background:#17304F;}
+  .sec-t{font-size:11px;font-weight:700;color:#E2E8F0;display:flex;align-items:center;gap:4px;}
+  .sec-b{font-size:9px;padding:1px 5px;border-radius:8px;font-weight:600;}
+  .sec-b.done{background:#DCFCE7;color:#166534;}.sec-b.part{background:#FEF3C7;color:#92400E;}
+  .sec-b.mt{background:rgba(255,255,255,.15);color:#94A3B8;}
+  .sec-arr{font-size:9px;color:#94A3B8;transition:transform 120ms;}
+  .sec-h .sec-arr{color:#CBD5E1;}
+  .sec-arr.open{transform:rotate(90deg);}
+  .sec-h.req-h{background:#065F46;}
+  .sec-h.req-h:hover{background:#064E3B;}
+  .sec-body{padding:2px 10px 6px;}
+
+  .sub-hdr{display:flex;align-items:center;gap:6px;padding:5px 0 2px;margin-top:2px;}
+  .sub-hdr:first-child{margin-top:0;padding-top:2px;}
+  .sub-hdr-line{flex:1;height:1px;background:#CBD5E1;}
+  .sub-hdr-t{font-size:9px;font-weight:700;color:#64748B;text-transform:uppercase;letter-spacing:.5px;white-space:nowrap;}
+
+  .q{padding:4px 0;}
+  .q.alt{background:#EEF2F7;margin:0 -10px;padding:4px 10px;}
+  .q-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:2px;}
+  .q-lbl{font-size:11px;font-weight:600;color:#334155;}
+  .q-req{color:#EF4444;font-size:8px;vertical-align:super;}
+  .q-chk{color:#10B981;font-size:9px;margin-left:3px;}
+
+  .pills{display:flex;flex-wrap:wrap;gap:2px;}
+  .p{display:inline-flex;align-items:center;padding:2px 7px;border:1px solid #CBD5E1;border-radius:3px;
+    font-size:10px;cursor:pointer;transition:all 80ms;background:#fff;color:#475569;user-select:none;}
+  .p:hover{border-color:#93C5FD;background:#EFF6FF;}
+  .p.on{border-color:#2563EB;background:#DBEAFE;color:#1E40AF;font-weight:600;}
+  .p.neg.on{border-color:#EF4444;background:#FEE2E2;color:#991B1B;}
+
+  .cbl{display:grid;grid-template-columns:1fr 1fr;gap:1px 4px;}
+  .cb{display:flex;align-items:center;gap:4px;padding:2px 0;cursor:pointer;user-select:none;font-size:10px;color:#475569;}
+  .cb:hover{color:#1E40AF;}
+  .cb .bx{width:13px;height:13px;border:1.5px solid #94A3B8;border-radius:2px;flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;font-size:8px;transition:all 80ms;background:#fff;}
+  .cb.on .bx{background:#7C3AED;border-color:#7C3AED;color:#fff;}
+  .cb.on{color:#5B21B6;font-weight:500;}
+
+  .inp{padding:2px 6px;border:1px solid #CBD5E1;border-radius:3px;font-size:11px;font-family:inherit;
+    outline:none;transition:border-color 80ms;}
+  .inp:focus{border-color:#2563EB;box-shadow:0 0 0 1px rgba(37,99,235,.15);}
+  .inp-price{width:110px;font-weight:600;}
+  textarea.inp{resize:none;width:100%;}
+
+  .combo-row .pills{margin-bottom:3px;}
+  .yr-row{display:flex;align-items:center;gap:4px;}
+  .yr-hint{font-size:8px;color:#B0B8C4;font-weight:400;letter-spacing:.2px;white-space:nowrap;}
+  .yr-pills{display:flex;gap:2px;}
+  .yr-pills .p{padding:1px 5px;font-size:9px;}
+
+  .probe{font-size:9px;padding:2px 6px;background:#FEF3C7;border:1px solid #FDE68A;border-radius:2px;
+    color:#92400E;margin-top:2px;}
+
+  .notes-drag{height:8px;background:#334155;cursor:ns-resize;
+    display:flex;align-items:center;justify-content:center;}
+  .notes-drag::after{content:'';width:28px;height:2px;background:#64748B;border-radius:1px;}
+  .notes-sec{padding:4px 10px 6px;}
+  .notes-lbl{font-size:10px;font-weight:700;color:#334155;text-transform:uppercase;letter-spacing:.4px;margin-bottom:3px;}
+  .notes-box{width:100%;padding:4px 7px;border:1px solid #CBD5E1;border-radius:4px;
+    font-size:11px;font-family:inherit;outline:none;resize:none;color:#334155;line-height:1.4;overflow-y:auto;}
+  .notes-box:focus{border-color:#2563EB;box-shadow:0 0 0 1px rgba(37,99,235,.15);}
+  .notes-box::placeholder{color:#94A3B8;}
+
+  .foot-div{height:3px;background:#334155;}
+  .btn-offer{display:block;width:100%;padding:9px 0;background:#06B6D4;color:#fff;border:none;
+    font-size:13px;font-weight:700;cursor:pointer;transition:background 80ms;letter-spacing:.3px;}
+  .btn-offer:hover{background:#0891B2;}
+</style>
+</head>
+<body>
+<div class="frame"><div id="w" style="display:flex;flex-direction:column;height:100%;"></div></div>
+<script>
+// ================================================================
+// OVERRIDE MODE: Tear Down / Gut to Studs
+// ================================================================
+// 'off' | 'teardown' | 'gut2studs'
+let gOverride = 'off';
+
+// Demo cost tiers — connected investor pricing (below retail)
+// Research: retail $4-17/sqft, connected crews land $4-6/sqft
+const DEMO_TIERS = {
+  low:  { label:'Low (Rural / South)',    base:3500, perSqft:4   },
+  mid:  { label:'Mid (Average Market)',   base:4000, perSqft:5   },
+  high: { label:'High (Coastal / Urban)', base:5000, perSqft:6.5 },
+};
+let gDemoTier = 'mid';
+
+function demoCost(sqft){
+  const t = DEMO_TIERS[gDemoTier];
+  return Math.round(t.base + Math.max(sqft, 1200) * t.perSqft);
+}
+
+function toggleOverride(mode){
+  gOverride = (gOverride === mode) ? 'off' : mode;
+  R();
+}
+function setDemoTier(v){ gDemoTier = v; Rd(); }
+
+// ================================================================
+// RENO FORMULA — continuous multiplier from score, floor 1200 sqft
+// ================================================================
+function renoCalc(yearBuilt, sqft, score, isDef){
+  const age = 2026 - yearBuilt;
+  if(age < 0) return 0;
+  let factor;
+  if(age <= 40){ factor = age / 20.3; }
+  else { factor = 1.97 + (Math.sqrt(age) - Math.sqrt(40)) * 0.31; }
+  let effSqft = Math.max(sqft, 1200);
+  let mult;
+  if(isDef){
+    // Default state (no triage): fixed mult from year-based grade
+    mult = yearBuilt < 1975 ? 7 : 10; // C=7, D=10
+  } else {
+    // Triage answers: continuous interpolation — number always tracks slider
+    const pts = [{s:-60,m:22},{s:0,m:13},{s:20,m:10},{s:40,m:7},{s:60,m:4},{s:80,m:2},{s:100,m:2}];
+    mult = pts[pts.length-1].m;
+    for(let i=0; i<pts.length-1; i++){
+      if(score >= pts[i].s && score < pts[i+1].s){
+        const t = (score - pts[i].s) / (pts[i+1].s - pts[i].s);
+        mult = pts[i].m + t * (pts[i+1].m - pts[i].m); break;
+      }
+    }
+    if(score < pts[0].s) mult = pts[0].m;
+  }
+
+  // Gut2Studs override: floor multiplier at 18 (interior gutted = minimum heavy scope)
+  if(gOverride === 'gut2studs'){
+    mult = Math.max(18, mult);
+  }
+
+  let base = factor * effSqft * mult;
+  let boost = 0;
+  if(age < 40 && mult > 7){
+    const dB = 20000*(40-age)/40, fB = 30000*(40-age)/40;
+    if(mult >= 10) boost = dB + (mult-10)/3*(fB-dB);
+    else boost = (mult-7)/3*dB;
+  }
+  return Math.round(base + boost);
+}
+// Format number with commas
+function fmtNum(v){ return v.replace(/,/g,'').replace(/\B(?=(\d{3})+(?!\d))/g,','); }
+// Default grade when no triage answers: pre-1975→C, 1975+→D
+function defaultGrade(yearBuilt){ return yearBuilt < 1975 ? 'C' : 'D'; }
+// Has the user answered ANY triage question?
+function hasTriageAnswers(){
+  return Object.keys(SC).some(k => A[k] && SC[k][A[k]] !== undefined);
+}
+
+// ================================================================
+// DISPO PRICE FORMULA (v3-aj) — minimum $4,999
+// ================================================================
+function calculateDispoPrice(arv, reno, countyWeight) {
+    const ratio = reno / arv;
+    const bellCurve = 6.3 * Math.exp(-Math.pow((arv - 285000) / 180000, 2));
+    const linearDrift = -6.8 * ratio;
+    const sigmoid = -2.6 * (1 / (1 + Math.exp(-22 * (ratio - 0.37))));
+    const rawAdjFactor = bellCurve + linearDrift + sigmoid + 0.8;
+    const adjFactor = Math.round(Math.max(-7, Math.min(7, rawAdjFactor)) * 10) / 10;
+    let estDispoPrice = arv * (countyWeight + (adjFactor / 100)) - reno;
+    estDispoPrice = Math.round(estDispoPrice * 100) / 100;
+    // Floor: never show $0 — minimum $4,999
+    if(estDispoPrice < 4999) estDispoPrice = 4999;
+    return { adjFactor, estDispoPrice };
+}
+
+// ================================================================
+// SCORING ENGINE
+// ================================================================
+const SC = {
+  roof_age:{'<5':8,'5-10':4,'10-15':0,'15-20':-4,'20+':-8},
+  roof_lk:{'None':5,'Past fix':0,'Active':-12,'Unsure':-3},
+  windows:{'Vinyl':5,'Mix':1,'Orig':-4,'Unsure':-2},
+  siding:{'Good':4,'Fair':0,'Poor':-4,'Unsure':-1},
+  found_t:{'Slab':1,'Crawl':0,'Bsmt':0,'Unsure':-1},
+  found_i:{'None':3,'Minor':-3,'Major':-15,'Unsure':-4},
+  hvac_age:{'<5':7,'5-10':3,'10-15':-2,'15+':-7},
+  heat_src:{'Gas':2,'Electric':0,'Heat Pump':3,'Boiler':-2,'Unknown':-2},
+  heat_age:{'<5':5,'5-10':2,'10-15':-2,'15+':-5},
+  wh_age:{'<5':2,'5-10':0,'10+':-2},
+  plumb:{'Updated':5,'Partial':1,'Orig':-5,'Unsure':-2},
+  elec:{'Breakers':4,'Fuses':-6,'Unsure':-2},
+  kitchen:{'Updated':8,'Partial':1,'No':-5},
+  kitchen_yr:{'<5':3,'5-10':1,'10+':-2},
+  counter:{'Granite':3,'Formica':-1,'Laminate':-2,'Unknown':-1},
+  baths:{'Updated':6,'Partial':1,'No':-4},
+  baths_yr:{'<5':3,'5-10':1,'10+':-2},
+  floor:{'Updated':4,'Partial':1,'Orig':-3},
+  floor_yr:{'<5':2,'5-10':1,'10+':-1},
+};
+
+function calcScore(){
+  let s = 45, pos=0, neg=0, answered=0;
+  Object.keys(SC).forEach(k=>{
+    const v = A[k];
+    if(v && SC[k][v] !== undefined){
+      const pts = SC[k][v]; s += pts; answered++;
+      if(pts > 0) pos++; else if(pts < 0) neg++;
+    }
+  });
+  if(answered >= 5){
+    const posR = pos/answered, negR = neg/answered;
+    if(posR >= 0.65) s += Math.round((posR - 0.5) * 14);
+    if(negR >= 0.65) s -= Math.round((negR - 0.5) * 14);
+  }
+  return Math.min(100, s); // no floor — let score go negative for F-minus territory
+}
+
+function scoreToLetter(s){
+  if(s >= 80) return 'A'; if(s >= 60) return 'B';
+  if(s >= 40) return 'C'; if(s >= 20) return 'D'; return 'F';
+}
+function letterDesc(l){
+  return {A:'Move-in',B:'Minor',C:'Moderate',D:'Heavy',F:'Gut / struct'}[l]||'';
+}
+function letterClass(l){ return 'g'+l; }
+
+// Override-aware label for grade display
+function overrideGradeDisplay(letter){
+  if(gOverride === 'teardown') return { letter:'TD', desc:'Tear Down', cls:'gF' };
+  if(gOverride === 'gut2studs') return { letter:'G2S', desc:'Gut to Studs', cls:'gF' };
+  return { letter, desc:letterDesc(letter), cls:'g'+letter };
+}
+
+// ================================================================
+// DATA
+// ================================================================
+const SECS=[
+  {id:'req',t:'Required Info',qs:[
+    {id:'motiv',lbl:'Motivation to Sell',type:'chk',req:true,
+      opts:['Behind on Pmts','Pre-Foreclosure','Tax Liens','Bad Tenants','Tired Landlord','Vacant',
+            'Inherited','Probate','Divorce','Downsizing','Relocating','Needs Repairs',
+            'Code Violations','Job Loss','Medical','Bankruptcy','Retirement','Other']},
+    {id:'ask_price',lbl:'Asking Price',type:'price',req:true},
+    {id:'occ',lbl:'Occupancy',type:'sel',req:true,opts:['Vacant','Owner','Tenant','Unknown']},
+    {id:'lease',lbl:'Lease',type:'sel',opts:['Mo-to-Mo','Fixed','Unknown'],showIf:{f:'occ',v:'Tenant'}},
+    {id:'rent',lbl:'Rent Current?',type:'sel',opts:['Yes','Behind','Unknown'],showIf:{f:'occ',v:'Tenant'}},
+  ]},
+  {id:'triage',t:'Condition Triage',groups:[
+    {t:'Exterior',qs:[
+      {id:'roof_age',lbl:'Roof Age',type:'sel',opts:['<5','5-10','10-15','15-20','20+'],
+        probe:'Closer to 5, 10, or 20+?'},
+      {id:'roof_lk',lbl:'Roof Leaks',type:'sel',opts:['None','Past fix','Active','Unsure'],neg:['Active']},
+      {id:'windows',lbl:'Windows',type:'sel',opts:['Vinyl','Mix','Orig','Unsure']},
+      {id:'siding',lbl:'Siding/Paint',type:'sel',opts:['Good','Fair','Poor','Unsure'],neg:['Poor']},
+      {id:'found_t',lbl:'Foundation',type:'sel',opts:['Slab','Crawl','Bsmt','Unsure']},
+      {id:'found_i',lbl:'Found. Issues',type:'sel',opts:['None','Minor','Major','Unsure'],neg:['Major']},
+    ]},
+    {t:'Systems',qs:[
+      {id:'hvac_age',lbl:'A/C Age',type:'sel',opts:['<5','5-10','10-15','15+'],
+        probe:'Closer to 5, 10, or 15+?'},
+      {id:'heat_src',lbl:'Heat Source',type:'sel',opts:['Gas','Electric','Heat Pump','Boiler','Unknown']},
+      {id:'heat_age',lbl:'Furnace Age',type:'sel',opts:['<5','5-10','10-15','15+']},
+      {id:'wh_age',lbl:'Water Heater',type:'sel',opts:['<5','5-10','10+']},
+      {id:'plumb',lbl:'Plumbing',type:'sel',opts:['Updated','Partial','Orig','Unsure']},
+      {id:'elec',lbl:'Electrical',type:'sel',opts:['Breakers','Fuses','Unsure'],neg:['Fuses']},
+    ]},
+    {t:'Interior',qs:[
+      {id:'kitchen',lbl:'Kitchen Remodel',type:'sel',opts:['Updated','Partial','No'],yrId:'kitchen_yr'},
+      {id:'counter',lbl:'Countertops',type:'sel',opts:['Granite','Formica','Laminate','Unknown']},
+      {id:'baths',lbl:'Bath Remodel',type:'sel',opts:['Updated','Partial','No'],yrId:'baths_yr'},
+      {id:'floor',lbl:'Flooring',type:'sel',opts:['Updated','Partial','Orig'],yrId:'floor_yr'},
+    ]},
+    {t:'Bonus Intel',qs:[
+      {id:'timeline',lbl:'Timeline',type:'sel',opts:['ASAP','30 days','60 days','No rush']},
+      {id:'offers',lbl:'Other Offers',type:'sel',opts:['No','Yes','Talking']},
+    ]},
+  ]},
+];
+
+// ================================================================
+// STATE
+// ================================================================
+let A={}, M={}, O={req:true}, P={};
+let gYr='1970', gSqft='1400', gArv='250,000';
+let _notesMinH=80;
+let _prevScore=45;
+
+function vis(q){return !q.showIf||A[q.showIf.f]===q.showIf.v;}
+function has(q){return q.type==='chk'?(M[q.id]&&M[q.id].length>0):(A[q.id]!==undefined&&A[q.id]!=='');}
+function secP(sec){
+  let t=0,a=0;
+  const allQs = sec.groups ? sec.groups.flatMap(g=>g.qs) : sec.qs;
+  allQs.forEach(q=>{if(!vis(q))return;t++;if(has(q))a++;});
+  return{t,a};
+}
+function reqOk(){return SECS[0].qs.filter(q=>q.req&&vis(q)).every(q=>has(q));}
+
+function getScroll(){const el=document.querySelector('.body');return el?el.scrollTop:0;}
+function setScroll(v){const el=document.querySelector('.body');if(el)el.scrollTop=v;}
+function getFocus(){
+  const el=document.activeElement;
+  if(!el||!el.closest||!el.closest('.gauge,.sec-body,.notes-sec'))return null;
+  const tag=el.tagName,oninput=el.getAttribute('oninput')||'';
+  const cursor=el.selectionStart||0;
+  return {tag,oninput,cursor};
+}
+function restoreFocus(info){
+  if(!info)return;
+  const candidates=document.querySelectorAll(info.tag.toLowerCase()+'[oninput]');
+  for(const el of candidates){
+    if((el.getAttribute('oninput')||'')===info.oninput){
+      el.focus();
+      try{el.setSelectionRange(info.cursor,info.cursor);}catch(e){}
+      return;
+    }
+  }
+}
+
+function thumbPct(s){ return Math.max(0, Math.min(100, s)); }
+let _debounce=null;
+function set(id,v){A[id]=(A[id]===v?'':v);R();}
+function sv(id,v){A[id]=v;Rd();}
+function tg(id,v){if(!M[id])M[id]=[];const i=M[id].indexOf(v);i>=0?M[id].splice(i,1):M[id].push(v);R();}
+let _scrollToSec=null;
+function ts(id){O[id]=!O[id];if(O[id])_scrollToSec=id;R();}
+function pb(id){P[id]=!P[id];R();}
+function setYr(v){gYr=v;Rd();}
+function setSqft(v){gSqft=v;Rd();}
+function setArv(v){gArv=fmtNum(v);Rd();}
+
+function startDrag(e){
+  e.preventDefault();
+  const startY=e.clientY;
+  const box=document.querySelector('.notes-box');
+  if(!box)return;
+  const startH=box.offsetHeight;
+  const maxH=Math.round(document.querySelector('.frame').offsetHeight/2);
+  function onMove(ev){
+    _notesMinH=Math.max(48,Math.min(maxH,startH+(startY-ev.clientY)));
+    box.style.height=_notesMinH+'px';
+  }
+  function onUp(){document.removeEventListener('mousemove',onMove);document.removeEventListener('mouseup',onUp);}
+  document.addEventListener('mousemove',onMove);
+  document.addEventListener('mouseup',onUp);
+}
+
+// ================================================================
+// COMPUTE ALL (shared by R and Rd)
+// ================================================================
+function computeAll(){
+  const score = calcScore();
+  const yr = parseInt(gYr) || 0;
+  const sf = parseInt(gSqft) || 0;
+  const isDef = !hasTriageAnswers();
+  const letter = isDef && yr > 1800 ? defaultGrade(yr) : scoreToLetter(score);
+  const hasProperty = yr > 1800 && yr <= 2026 && sf > 0;
+
+  let reno;
+  if(gOverride === 'teardown'){
+    // Tear Down: demo cost only (not a rehab — bulldoze the structure)
+    reno = hasProperty ? demoCost(sf) : 0;
+  } else {
+    // Normal or Gut2Studs (G2S mult floor handled inside renoCalc)
+    reno = hasProperty ? renoCalc(yr, sf, score, isDef) : 0;
+  }
+
+  const arv = parseFloat(String(gArv).replace(/,/g,'')) || 0;
+  const COUNTY_WT = 0.70;
+  const hasDispo = hasProperty && arv > 0;
+  let dispo = null;
+  if(hasDispo){
+    dispo = calculateDispoPrice(arv, reno, COUNTY_WT);
+  }
+  return { score, yr, sf, isDef, letter, hasProperty, reno, arv, hasDispo, dispo };
+}
+
+// Debounced render for text inputs — patches DOM directly
+function Rd(){
+  clearTimeout(_debounce);
+  _debounce=setTimeout(()=>{
+    const c = computeAll();
+    const thumb=document.querySelector('.gauge-thumb');
+    const gEl=document.querySelector('.gauge-grade');
+    const dEl=document.querySelector('.gauge-desc');
+    const cEl=document.querySelector('.gauge-cost-val');
+    const clEl=document.querySelector('.gauge-cost-lbl');
+    if(thumb)thumb.style.left='calc('+thumbPct(c.score)+'% - 3px)';
+    const gd = overrideGradeDisplay(c.letter);
+    if(gEl){gEl.textContent=gd.letter;gEl.className='gauge-grade '+gd.cls;}
+    if(dEl)dEl.textContent=gd.desc;
+
+    // Rehab cost label changes with override mode
+    let costLabel = 'est. rehab';
+    if(gOverride === 'teardown') costLabel = 'est. demo';
+    else if(gOverride === 'gut2studs') costLabel = 'est. rehab (g2s)';
+    if(cEl)cEl.textContent=c.hasProperty?'$'+c.reno.toLocaleString():'—';
+    if(clEl)clEl.textContent=c.hasProperty?costLabel:'enter yr + sqft';
+
+    // Dispo badge
+    const dbVal=document.querySelector('.dispo-badge-val');
+    const dbLbl=document.querySelector('.dispo-badge-lbl');
+    const dbTip=document.querySelector('.dispo-tip');
+    if(dbVal){
+      if(c.hasDispo){
+        dbVal.textContent='$'+Math.round(c.dispo.estDispoPrice).toLocaleString();
+        if(dbLbl)dbLbl.textContent='est. dispo';
+        const sign=c.dispo.adjFactor>=0?'+':'';
+        if(dbTip)dbTip.textContent='Adj: '+sign+c.dispo.adjFactor.toFixed(1)+'% on 70% base wt';
+      } else {
+        dbVal.textContent='—';
+        if(dbLbl)dbLbl.textContent='enter arv';
+      }
+    }
+  },80);
+}
+
+// ================================================================
+// RENDER HELPERS
+// ================================================================
+function rChk(q){
+  const sel=M[q.id]||[];
+  return `<div class="cbl">${q.opts.map(o=>{
+    const on=sel.includes(o);
+    return `<div class="cb${on?' on':''}" onclick="tg('${q.id}','${o.replace(/'/g,"\\'")}')"><span class="bx">${on?'✓':''}</span>${o}</div>`;
+  }).join('')}</div>`;
+}
+
+function rPills(q){
+  const v=A[q.id]||'',negs=q.neg||[];
+  return `<div class="pills">${q.opts.map(o=>
+    `<span class="p${negs.includes(o)?' neg':''}${v===o?' on':''}" onclick="set('${q.id}','${o.replace(/'/g,"\\'")}')">${o}</span>`
+  ).join('')}</div>`;
+}
+
+function rYrPills(yrId){
+  const yrOpts=['<5','5-10','10+'];
+  const yv=A[yrId]||'';
+  return `<div class="yr-row"><span class="yr-hint">updated yr</span><div class="yr-pills">${yrOpts.map(o=>
+    `<span class="p${yv===o?' on':''}" onclick="set('${yrId}','${o}')">${o}</span>`
+  ).join('')}</div></div>`;
+}
+
+function rIn(q){
+  const v=A[q.id]||'';
+  if(q.type==='chk') return rChk(q);
+  if(q.type==='sel'&&q.yrId) return `<div class="combo-row">${rPills(q)}${rYrPills(q.yrId)}</div>`;
+  if(q.type==='sel') return rPills(q);
+  if(q.type==='price') return `<div style="display:flex;align-items:center;gap:3px;">
+    <span style="font-size:11px;font-weight:700;color:#334155;">$</span>
+    <input class="inp inp-price" type="text" value="${v}" placeholder="0" oninput="sv('${q.id}',this.value)"/>
+  </div>`;
+  if(q.type==='area') return `<textarea class="inp" rows="2" placeholder="${q.ph||''}" oninput="sv('${q.id}',this.value)">${v}</textarea>`;
+  return `<input class="inp" value="${v}" placeholder="${q.ph||''}" oninput="sv('${q.id}',this.value)"/>`;
+}
+
+function rQ(q,idx){
+  if(!vis(q)) return '';
+  const h=has(q),alt=idx%2===1;
+  return `<div class="q${alt?' alt':''}">
+    <div class="q-top">
+      <span class="q-lbl">${q.lbl}${q.req?'<span class="q-req">*</span>':''}${h?'<span class="q-chk">✓</span>':''}</span>
+      ${q.probe&&!h?`<span style="font-size:10px;color:#94A3B8;cursor:pointer;" onclick="pb('${q.id}')" title="Probe">🔍</span>`:''}
+    </div>
+    ${rIn(q)}
+    ${P[q.id]&&q.probe?`<div class="probe">💡 "${q.probe}"</div>`:''}
+  </div>`;
+}
+
+function rSec(sec){
+  const p=secP(sec),isO=!!O[sec.id];
+  const bc=p.a===p.t&&p.t>0?'done':p.a>0?'part':'mt';
+  const isReq = sec.id==='req';
+  let bodyHtml='';
+  if(isO){
+    let vi=0;
+    if(sec.groups){
+      bodyHtml = sec.groups.map(g=>{
+        const ghdr=`<div class="sub-hdr"><span class="sub-hdr-line"></span><span class="sub-hdr-t">${g.t}</span><span class="sub-hdr-line"></span></div>`;
+        const gqs=g.qs.map(q=>{if(!vis(q))return '';return rQ(q,vi++);}).join('');
+        return ghdr+gqs;
+      }).join('');
+    } else {
+      bodyHtml = sec.qs.map(q=>{if(!vis(q))return '';return rQ(q,vi++);}).join('');
+    }
+  }
+  return `<div class="sec">
+    <div class="sec-h${isReq?' req-h':''}" onclick="ts('${sec.id}')">
+      <span class="sec-t">${sec.t}<span class="sec-b ${bc}">${p.a}/${p.t}</span></span>
+      <span class="sec-arr${isO?' open':''}">▶</span>
+    </div>
+    ${isO?`<div class="sec-body">${bodyHtml}</div>`:''}
+  </div>`;
+}
+
+// ================================================================
+// MAIN RENDER
+// ================================================================
+function R(){
+  const scrollPos = getScroll();
+  const focusInfo = getFocus();
+  const c = computeAll();
+
+  const oldPct = _prevScore;
+  const newPct = c.score;
+  _prevScore = c.score;
+
+  let ta=0,tt=0;
+  SECS.forEach(s=>{const p=secP(s);ta+=p.a;tt+=p.t;});
+
+  const letters = ['F','D','C','B','A'];
+  const gd = overrideGradeDisplay(c.letter);
+
+  // Dispo display
+  let dpStr = '—', dpLbl = 'enter arv', tipContent = '';
+  if(c.hasDispo){
+    dpStr = '$' + Math.round(c.dispo.estDispoPrice).toLocaleString();
+    dpLbl = 'est. dispo';
+    const sign = c.dispo.adjFactor >= 0 ? '+' : '';
+    tipContent = 'Adj: ' + sign + c.dispo.adjFactor.toFixed(1) + '% on 70% base wt';
+  }
+
+  // Rehab label
+  let costLabel = 'est. rehab';
+  if(gOverride === 'teardown') costLabel = 'est. demo';
+  else if(gOverride === 'gut2studs') costLabel = 'est. rehab (g2s)';
+
+  // Demo tier dropdown (only shown when teardown active)
+  let tierHtml = '';
+  if(gOverride === 'teardown'){
+    tierHtml = `<div class="ovr-sel">
+      <label>Market Tier</label>
+      <select onchange="setDemoTier(this.value)">
+        ${Object.keys(DEMO_TIERS).map(k=>
+          `<option value="${k}"${k===gDemoTier?' selected':''}>${DEMO_TIERS[k].label}</option>`
+        ).join('')}
+      </select>
+    </div>`;
+  }
+
+  document.getElementById('w').innerHTML = `
+    <div class="hdr">
+      <span class="hdr-t">Seller Questionnaire</span>
+      <span class="hdr-stat">${ta}/${tt} answered</span>
+    </div>
+
+    <div class="gauge">
+      <div class="gauge-inputs">
+        <div style="flex:1;"><label>Year Built</label>
+          <input type="text" value="${gYr}" placeholder="e.g. 1990" oninput="setYr(this.value)" maxlength="4"/></div>
+        <div style="flex:1;"><label>Sq Ft</label>
+          <input type="text" value="${gSqft}" placeholder="e.g. 1500" oninput="setSqft(this.value)"/></div>
+        <div style="flex:1;"><label>ARV</label>
+          <input type="text" value="${gArv}" placeholder="250,000" oninput="setArv(this.value)"/></div>
+      </div>
+      <div class="ovr-row">
+        <div class="ovr-tog${gOverride==='teardown'?' on-td':''}" onclick="toggleOverride('teardown')">
+          <span class="dot"></span>Tear Down
+        </div>
+        <div class="ovr-tog${gOverride==='gut2studs'?' on-g2s':''}" onclick="toggleOverride('gut2studs')">
+          <span class="dot"></span>Gut 2 Studs
+        </div>
+      </div>
+      ${tierHtml}
+      <div class="gauge-bar"><div class="gauge-thumb" style="left:calc(${thumbPct(oldPct)}% - 3px);"></div></div>
+      <div class="gauge-letters">${letters.map(l=>
+        `<span class="${l===c.letter?'active':''}">${l}</span>`
+      ).join('')}</div>
+      <div class="gauge-bottom">
+        <div style="display:flex;align-items:baseline;">
+          <span class="gauge-grade ${gd.cls}">${gd.letter}</span>
+          <span class="gauge-desc">${gd.desc}</span>
+        </div>
+        <div class="dispo-badge">
+          <div class="dispo-badge-val">${dpStr}</div>
+          <div class="dispo-badge-lbl">${dpLbl}</div>
+          ${tipContent?`<div class="dispo-tip">${tipContent}</div>`:''}
+        </div>
+        <div class="gauge-cost">
+          <div class="gauge-cost-val">${c.hasProperty?'$'+c.reno.toLocaleString():'—'}</div>
+          <div class="gauge-cost-lbl">${c.hasProperty?costLabel:'enter yr + sqft'}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="body">
+      ${SECS.map(s=>rSec(s)).join('')}
+      <div class="notes-drag" onmousedown="startDrag(event)"></div>
+      <div class="notes-sec">
+        <div class="notes-lbl">Notes</div>
+        <textarea class="notes-box" style="height:${_notesMinH}px;" placeholder="Anything else about the property…" oninput="sv('_notes',this.value)">${A['_notes']||''}</textarea>
+      </div>
+      <div class="foot-div"></div>
+      <button class="btn-offer">Save Offer</button>
+    </div>`;
+
+  requestAnimationFrame(()=>{
+    setScroll(scrollPos);
+    restoreFocus(focusInfo);
+    if(_scrollToSec){
+      const secEl=document.querySelector('[onclick="ts(\''+_scrollToSec+'\')"]');
+      if(secEl){
+        const body=document.querySelector('.body');
+        const rect=secEl.getBoundingClientRect();
+        const bodyRect=body.getBoundingClientRect();
+        const offset=rect.top-bodyRect.top+body.scrollTop;
+        body.scrollTo({top:offset-4,behavior:'smooth'});
+      }
+      _scrollToSec=null;
+    }
+    if(oldPct !== newPct){
+      requestAnimationFrame(()=>{
+        const thumb=document.querySelector('.gauge-thumb');
+        if(thumb) thumb.style.left='calc('+thumbPct(newPct)+'% - 3px)';
+      });
+    }
+  });
+}
+
+R();
+</script>
+</body>
+</html>
