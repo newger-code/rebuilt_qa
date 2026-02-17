@@ -138,7 +138,7 @@
     color:#92400E;margin-top:2px;}
 
   /* ── Notes: pinned bottom panel (outside scroll) ── */
-  .notes-panel{flex-shrink:0;border-top:1px solid #CBD5E1;background:#F8FAFC;}
+  .notes-panel{flex-shrink:0;border-top:3px solid #334155;background:#F8FAFC;}
   .notes-bar{display:flex;align-items:center;justify-content:space-between;padding:3px 10px;
     cursor:pointer;user-select:none;}
   .notes-bar:hover{background:#EEF2F7;}
@@ -146,8 +146,8 @@
     display:flex;align-items:center;gap:4px;}
   .notes-bar-t .dot{width:6px;height:6px;border-radius:50%;background:#10B981;display:none;}
   .notes-bar-t .dot.has{display:inline-block;}
-  .notes-bar-arr{font-size:8px;color:#94A3B8;transition:transform 120ms;}
-  .notes-bar-arr.open{transform:rotate(180deg);}
+  .notes-bar-arr{font-size:10px;color:#64748B;transition:transform 120ms;padding:2px;}
+  .notes-bar-arr.open{transform:rotate(180deg);color:#2563EB;}
   .notes-body{padding:0 10px 4px;overflow:hidden;transition:max-height 200ms ease;}
   .notes-body.collapsed{max-height:38px;}
   .notes-body.expanded{max-height:104px;}
@@ -161,6 +161,23 @@
   .btn-offer{display:block;width:100%;padding:9px 0;background:#06B6D4;color:#fff;border:none;
     font-size:13px;font-weight:700;cursor:pointer;transition:background 80ms;letter-spacing:.3px;}
   .btn-offer:hover{background:#0891B2;}
+
+  /* ── Confirm modal ── */
+  .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;
+    justify-content:center;z-index:100;animation:fadeIn 150ms ease;}
+  .modal-box{background:#fff;border-radius:10px;padding:20px 24px;max-width:300px;width:90%;
+    box-shadow:0 8px 30px rgba(0,0,0,.2);text-align:center;}
+  .modal-icon{font-size:28px;margin-bottom:8px;}
+  .modal-msg{font-size:13px;color:#334155;line-height:1.5;margin-bottom:16px;}
+  .modal-msg strong{color:#1E293B;}
+  .modal-btns{display:flex;gap:10px;}
+  .modal-btns button{flex:1;padding:10px 0;border-radius:6px;font-size:13px;font-weight:700;
+    cursor:pointer;border:none;transition:all 100ms;font-family:inherit;}
+  .modal-cancel{background:#E2E8F0;color:#475569;}
+  .modal-cancel:hover{background:#CBD5E1;}
+  .modal-yes{background:#06B6D4;color:#fff;}
+  .modal-yes:hover{background:#0891B2;}
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 </style>
 </head>
 <body>
@@ -455,6 +472,34 @@ function setArv(v){gArv=fmtNum(v);Rd();}
 function toggleNotes(){ _notesOpen=!_notesOpen; R(); }
 function focusNotes(){ if(!_notesOpen){_notesOpen=true; R();} }
 
+function confirmSave(){
+  // Remove any existing modal
+  const existing = document.querySelector('.modal-overlay');
+  if(existing) existing.remove();
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.innerHTML = `<div class="modal-box">
+    <div class="modal-icon">📤</div>
+    <div class="modal-msg">This will <strong>create or update</strong> a HubSpot entry for this property.</div>
+    <div class="modal-btns">
+      <button class="modal-cancel" onclick="dismissModal()">Cancel</button>
+      <button class="modal-yes" onclick="doSave()">Yes, Save</button>
+    </div>
+  </div>`;
+  document.body.appendChild(overlay);
+  // Close on backdrop click
+  overlay.addEventListener('click', function(e){ if(e.target===overlay) dismissModal(); });
+}
+function dismissModal(){
+  const m = document.querySelector('.modal-overlay');
+  if(m) m.remove();
+}
+function doSave(){
+  dismissModal();
+  // TODO: HubSpot API integration
+  console.log('Save to HubSpot', {answers:A, multi:M, yr:gYr, sqft:gSqft, arv:gArv, override:gOverride, tier:gDemoTier});
+}
+
 // ================================================================
 // COMPUTE ALL (shared by R and Rd)
 // ================================================================
@@ -698,7 +743,7 @@ function R(){
     <div class="body">
       ${SECS.map(s=>rSec(s)).join('')}
       <div style="height:3px;background:#334155;"></div>
-      <button class="btn-offer">Save Offer</button>
+      <button class="btn-offer" onclick="confirmSave()">Save Offer</button>
     </div>
 
     <div class="notes-panel">
