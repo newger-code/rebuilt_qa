@@ -137,15 +137,27 @@
   .probe{font-size:9px;padding:2px 6px;background:#FEF3C7;border:1px solid #FDE68A;border-radius:2px;
     color:#92400E;margin-top:2px;}
 
-  .notes-sec{padding:4px 10px 6px;border-top:1px solid #E2E8F0;}
-  .notes-lbl{font-size:10px;font-weight:700;color:#334155;text-transform:uppercase;letter-spacing:.4px;margin-bottom:3px;}
+  /* ── Notes: pinned bottom panel (outside scroll) ── */
+  .notes-panel{flex-shrink:0;border-top:1px solid #CBD5E1;background:#F8FAFC;}
+  .notes-bar{display:flex;align-items:center;justify-content:space-between;padding:3px 10px;
+    cursor:pointer;user-select:none;}
+  .notes-bar:hover{background:#EEF2F7;}
+  .notes-bar-t{font-size:10px;font-weight:700;color:#334155;text-transform:uppercase;letter-spacing:.4px;
+    display:flex;align-items:center;gap:4px;}
+  .notes-bar-t .dot{width:6px;height:6px;border-radius:50%;background:#10B981;display:none;}
+  .notes-bar-t .dot.has{display:inline-block;}
+  .notes-bar-arr{font-size:8px;color:#94A3B8;transition:transform 120ms;}
+  .notes-bar-arr.open{transform:rotate(180deg);}
+  .notes-body{padding:0 10px 4px;overflow:hidden;transition:max-height 200ms ease;}
+  .notes-body.collapsed{max-height:38px;}
+  .notes-body.expanded{max-height:104px;}
   .notes-box{width:100%;padding:4px 7px;border:1px solid #CBD5E1;border-radius:4px;
-    font-size:11px;font-family:inherit;outline:none;resize:vertical;color:#334155;line-height:1.4;
-    min-height:48px;max-height:200px;overflow-y:auto;}
+    font-size:11px;font-family:inherit;outline:none;resize:none;color:#334155;line-height:1.4;overflow-y:auto;}
+  .notes-body.collapsed .notes-box{height:32px;}
+  .notes-body.expanded .notes-box{height:96px;}
   .notes-box:focus{border-color:#2563EB;box-shadow:0 0 0 1px rgba(37,99,235,.15);}
   .notes-box::placeholder{color:#94A3B8;}
 
-  .foot-div{height:3px;background:#334155;}
   .btn-offer{display:block;width:100%;padding:9px 0;background:#06B6D4;color:#fff;border:none;
     font-size:13px;font-weight:700;cursor:pointer;transition:background 80ms;letter-spacing:.3px;}
   .btn-offer:hover{background:#0891B2;}
@@ -394,7 +406,7 @@ const SECS=[
 // ================================================================
 let A={}, M={}, O={req:true}, P={};
 let gYr='1970', gSqft='1400', gArv='250,000';
-let _notesH=48; // tracks user-resized or auto-grown height
+let _notesOpen=false; // collapsed (2 lines) by default
 let _prevScore=45;
 
 function vis(q){return !q.showIf||A[q.showIf.f]===q.showIf.v;}
@@ -411,7 +423,7 @@ function getScroll(){const el=document.querySelector('.body');return el?el.scrol
 function setScroll(v){const el=document.querySelector('.body');if(el)el.scrollTop=v;}
 function getFocus(){
   const el=document.activeElement;
-  if(!el||!el.closest||!el.closest('.gauge,.sec-body,.notes-sec'))return null;
+  if(!el||!el.closest||!el.closest('.gauge,.sec-body,.notes-panel'))return null;
   const tag=el.tagName,oninput=el.getAttribute('oninput')||'';
   const cursor=el.selectionStart||0;
   return {tag,oninput,cursor};
@@ -440,12 +452,8 @@ function setYr(v){gYr=v;Rd();}
 function setSqft(v){gSqft=v;Rd();}
 function setArv(v){gArv=fmtNum(v);Rd();}
 
-function autoGrow(el){
-  el.style.height='auto';
-  const h = Math.max(48, Math.min(200, el.scrollHeight));
-  el.style.height = h + 'px';
-  _notesH = h;
-}
+function toggleNotes(){ _notesOpen=!_notesOpen; R(); }
+function focusNotes(){ if(!_notesOpen){_notesOpen=true; R();} }
 
 // ================================================================
 // COMPUTE ALL (shared by R and Rd)
@@ -689,12 +697,18 @@ function R(){
 
     <div class="body">
       ${SECS.map(s=>rSec(s)).join('')}
-      <div class="notes-sec">
-        <div class="notes-lbl">Notes</div>
-        <textarea class="notes-box" style="height:${_notesH}px;" placeholder="Anything else about the property…" oninput="sv('_notes',this.value);autoGrow(this)">${A['_notes']||''}</textarea>
-      </div>
-      <div class="foot-div"></div>
+      <div style="height:3px;background:#334155;"></div>
       <button class="btn-offer">Save Offer</button>
+    </div>
+
+    <div class="notes-panel">
+      <div class="notes-bar" onclick="toggleNotes()">
+        <span class="notes-bar-t">Notes <span class="dot${(A['_notes']||'')?' has':''}"></span></span>
+        <span class="notes-bar-arr${_notesOpen?' open':''}">▼</span>
+      </div>
+      <div class="notes-body ${_notesOpen?'expanded':'collapsed'}">
+        <textarea class="notes-box" placeholder="Quick note…" onfocus="focusNotes()" oninput="sv('_notes',this.value)">${A['_notes']||''}</textarea>
+      </div>
     </div>`;
 
   requestAnimationFrame(()=>{
