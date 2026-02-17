@@ -61,11 +61,18 @@
   .ovr-tog .dot{width:8px;height:8px;border-radius:50%;border:1.5px solid #CBD5E1;transition:all 120ms;}
   .ovr-tog.on-td .dot{background:#DC2626;border-color:#DC2626;}
   .ovr-tog.on-g2s .dot{background:#D97706;border-color:#D97706;}
-  .tier-row{display:flex;gap:3px;margin-bottom:4px;}
+  .tier-row{display:flex;gap:3px;margin-bottom:4px;position:relative;}
   .tier-p{flex:1;text-align:center;padding:2px 0;border:1px solid #CBD5E1;border-radius:3px;
     font-size:9px;font-weight:600;cursor:pointer;background:#fff;color:#64748B;transition:all 80ms;user-select:none;}
   .tier-p:hover{border-color:#93C5FD;background:#EFF6FF;}
   .tier-p.on{border-color:#DC2626;background:#FEF2F2;color:#DC2626;font-weight:700;}
+  .tier-p.on-env{border-color:#7C3AED;background:#F5F3FF;color:#7C3AED;font-weight:700;}
+  .tier-tip{position:absolute;top:100%;left:0;right:0;background:#1E293B;color:#fff;font-size:9px;
+    padding:5px 8px;border-radius:4px;margin-top:3px;z-index:10;line-height:1.4;
+    animation:tipFade 4s ease-in-out forwards;pointer-events:none;}
+  .tier-tip::before{content:'';position:absolute;bottom:100%;left:var(--arrow-x,50%);transform:translateX(-50%);
+    border:4px solid transparent;border-bottom-color:#1E293B;}
+  @keyframes tipFade{0%{opacity:1}75%{opacity:1}100%{opacity:0}}
 
   /* ── Scrollable body ── */
   .body{flex:1;overflow-y:auto;overflow-x:hidden;}
@@ -158,11 +165,17 @@ let gOverride = 'off';
 // Demo cost tiers — connected investor pricing (below retail)
 // Research: retail $4-17/sqft, connected crews land $4-6/sqft
 const DEMO_TIERS = {
-  low:  { pill:'Low',  base:3500, perSqft:4   },
-  mid:  { pill:'Mid',  base:4000, perSqft:5   },
-  high: { pill:'High', base:5000, perSqft:6.5 },
+  low:  { pill:'Low',  base:3500, perSqft:4,
+    tip:'Rural areas, smaller markets, easy access' },
+  mid:  { pill:'Mid',  base:4000, perSqft:5,
+    tip:'Average market, standard residential demo' },
+  high: { pill:'High', base:5000, perSqft:6.5,
+    tip:'Higher-priced larger markets or extra structures to remove' },
+  enviro:{ pill:'Enviro', base:10000, perSqft:13,
+    tip:'Asbestos shingles/ducts, heavy lead paint — certified abatement required' },
 };
 let gDemoTier = 'mid';
+let _tierTipTimer = null;
 
 function demoCost(sqft){
   const t = DEMO_TIERS[gDemoTier];
@@ -173,7 +186,39 @@ function toggleOverride(mode){
   gOverride = (gOverride === mode) ? 'off' : mode;
   R();
 }
-function setDemoTier(v){ gDemoTier = v; R(); }
+function setDemoTier(v){
+  gDemoTier = v;
+  // Show tooltip — animate via DOM, 4s auto-dismiss
+  clearTimeout(_tierTipTimer);
+  R();
+  // After render, inject the tip
+  requestAnimationFrame(()=>{
+    const row = document.querySelector('.tier-row');
+    if(!row) return;
+    // Remove any existing tip
+    const old = row.querySelector('.tier-tip');
+    if(old) old.remove();
+    const t = DEMO_TIERS[v];
+    if(!t || !t.tip) return;
+    // Position arrow over the clicked pill
+    const pills = row.querySelectorAll('.tier-p');
+    const keys = Object.keys(DEMO_TIERS);
+    const idx = keys.indexOf(v);
+    const pill = pills[idx];
+    let arrowX = '50%';
+    if(pill){
+      const pillRect = pill.getBoundingClientRect();
+      const rowRect = row.getBoundingClientRect();
+      arrowX = Math.round(pillRect.left - rowRect.left + pillRect.width/2) + 'px';
+    }
+    const tip = document.createElement('div');
+    tip.className = 'tier-tip';
+    tip.style.setProperty('--arrow-x', arrowX);
+    tip.textContent = t.tip;
+    row.appendChild(tip);
+    _tierTipTimer = setTimeout(()=>{ tip.remove(); }, 4200);
+  });
+}
 
 // ================================================================
 // RENO FORMULA — continuous multiplier from score, floor 1200 sqft
@@ -604,7 +649,7 @@ function R(){
   let tierHtml = '';
   if(gOverride === 'teardown'){
     tierHtml = `<div class="tier-row">${Object.keys(DEMO_TIERS).map(k=>
-      `<div class="tier-p${k===gDemoTier?' on':''}" onclick="setDemoTier('${k}')">${DEMO_TIERS[k].pill}</div>`
+      `<div class="tier-p${k===gDemoTier?(k==='enviro'?' on-env':' on'):''}" onclick="setDemoTier('${k}')">${DEMO_TIERS[k].pill}</div>`
     ).join('')}</div>`;
   }
 
