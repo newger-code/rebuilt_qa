@@ -137,13 +137,11 @@
   .probe{font-size:9px;padding:2px 6px;background:#FEF3C7;border:1px solid #FDE68A;border-radius:2px;
     color:#92400E;margin-top:2px;}
 
-  .notes-drag{height:8px;background:#334155;cursor:ns-resize;
-    display:flex;align-items:center;justify-content:center;}
-  .notes-drag::after{content:'';width:28px;height:2px;background:#64748B;border-radius:1px;}
-  .notes-sec{padding:4px 10px 6px;}
+  .notes-sec{padding:4px 10px 6px;border-top:1px solid #E2E8F0;}
   .notes-lbl{font-size:10px;font-weight:700;color:#334155;text-transform:uppercase;letter-spacing:.4px;margin-bottom:3px;}
   .notes-box{width:100%;padding:4px 7px;border:1px solid #CBD5E1;border-radius:4px;
-    font-size:11px;font-family:inherit;outline:none;resize:none;color:#334155;line-height:1.4;overflow-y:auto;}
+    font-size:11px;font-family:inherit;outline:none;resize:vertical;color:#334155;line-height:1.4;
+    min-height:48px;max-height:200px;overflow-y:auto;}
   .notes-box:focus{border-color:#2563EB;box-shadow:0 0 0 1px rgba(37,99,235,.15);}
   .notes-box::placeholder{color:#94A3B8;}
 
@@ -396,7 +394,7 @@ const SECS=[
 // ================================================================
 let A={}, M={}, O={req:true}, P={};
 let gYr='1970', gSqft='1400', gArv='250,000';
-let _notesMinH=80;
+let _notesH=48; // tracks user-resized or auto-grown height
 let _prevScore=45;
 
 function vis(q){return !q.showIf||A[q.showIf.f]===q.showIf.v;}
@@ -442,20 +440,11 @@ function setYr(v){gYr=v;Rd();}
 function setSqft(v){gSqft=v;Rd();}
 function setArv(v){gArv=fmtNum(v);Rd();}
 
-function startDrag(e){
-  e.preventDefault();
-  const startY=e.clientY;
-  const box=document.querySelector('.notes-box');
-  if(!box)return;
-  const startH=box.offsetHeight;
-  const maxH=Math.round(document.querySelector('.frame').offsetHeight/2);
-  function onMove(ev){
-    _notesMinH=Math.max(48,Math.min(maxH,startH+(startY-ev.clientY)));
-    box.style.height=_notesMinH+'px';
-  }
-  function onUp(){document.removeEventListener('mousemove',onMove);document.removeEventListener('mouseup',onUp);}
-  document.addEventListener('mousemove',onMove);
-  document.addEventListener('mouseup',onUp);
+function autoGrow(el){
+  el.style.height='auto';
+  const h = Math.max(48, Math.min(200, el.scrollHeight));
+  el.style.height = h + 'px';
+  _notesH = h;
 }
 
 // ================================================================
@@ -700,10 +689,9 @@ function R(){
 
     <div class="body">
       ${SECS.map(s=>rSec(s)).join('')}
-      <div class="notes-drag" onmousedown="startDrag(event)"></div>
       <div class="notes-sec">
         <div class="notes-lbl">Notes</div>
-        <textarea class="notes-box" style="height:${_notesMinH}px;" placeholder="Anything else about the property…" oninput="sv('_notes',this.value)">${A['_notes']||''}</textarea>
+        <textarea class="notes-box" style="height:${_notesH}px;" placeholder="Anything else about the property…" oninput="sv('_notes',this.value);autoGrow(this)">${A['_notes']||''}</textarea>
       </div>
       <div class="foot-div"></div>
       <button class="btn-offer">Save Offer</button>
