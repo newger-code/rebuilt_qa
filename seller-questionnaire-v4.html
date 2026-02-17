@@ -61,11 +61,11 @@
   .ovr-tog .dot{width:8px;height:8px;border-radius:50%;border:1.5px solid #CBD5E1;transition:all 120ms;}
   .ovr-tog.on-td .dot{background:#DC2626;border-color:#DC2626;}
   .ovr-tog.on-g2s .dot{background:#D97706;border-color:#D97706;}
-  .ovr-sel{margin-bottom:4px;}
-  .ovr-sel select{width:100%;padding:2px 5px;border:1px solid #CBD5E1;border-radius:3px;
-    font-size:10px;font-weight:600;font-family:inherit;outline:none;color:#334155;background:#fff;}
-  .ovr-sel select:focus{border-color:#2563EB;}
-  .ovr-sel label{font-size:8px;color:#94A3B8;font-weight:600;text-transform:uppercase;letter-spacing:.3px;}
+  .tier-row{display:flex;gap:3px;margin-bottom:4px;}
+  .tier-p{flex:1;text-align:center;padding:2px 0;border:1px solid #CBD5E1;border-radius:3px;
+    font-size:9px;font-weight:600;cursor:pointer;background:#fff;color:#64748B;transition:all 80ms;user-select:none;}
+  .tier-p:hover{border-color:#93C5FD;background:#EFF6FF;}
+  .tier-p.on{border-color:#DC2626;background:#FEF2F2;color:#DC2626;font-weight:700;}
 
   /* ── Scrollable body ── */
   .body{flex:1;overflow-y:auto;overflow-x:hidden;}
@@ -158,9 +158,9 @@ let gOverride = 'off';
 // Demo cost tiers — connected investor pricing (below retail)
 // Research: retail $4-17/sqft, connected crews land $4-6/sqft
 const DEMO_TIERS = {
-  low:  { label:'Low (Rural / South)',    base:3500, perSqft:4   },
-  mid:  { label:'Mid (Average Market)',   base:4000, perSqft:5   },
-  high: { label:'High (Coastal / Urban)', base:5000, perSqft:6.5 },
+  low:  { pill:'Low',  base:3500, perSqft:4   },
+  mid:  { pill:'Mid',  base:4000, perSqft:5   },
+  high: { pill:'High', base:5000, perSqft:6.5 },
 };
 let gDemoTier = 'mid';
 
@@ -173,7 +173,7 @@ function toggleOverride(mode){
   gOverride = (gOverride === mode) ? 'off' : mode;
   R();
 }
-function setDemoTier(v){ gDemoTier = v; Rd(); }
+function setDemoTier(v){ gDemoTier = v; R(); }
 
 // ================================================================
 // RENO FORMULA — continuous multiplier from score, floor 1200 sqft
@@ -593,17 +593,12 @@ function R(){
   if(gOverride === 'teardown') costLabel = 'est. demo';
   else if(gOverride === 'gut2studs') costLabel = 'est. rehab (g2s)';
 
-  // Demo tier dropdown (only shown when teardown active)
+  // Demo tier pills (only shown when teardown active)
   let tierHtml = '';
   if(gOverride === 'teardown'){
-    tierHtml = `<div class="ovr-sel">
-      <label>Market Tier</label>
-      <select onchange="setDemoTier(this.value)">
-        ${Object.keys(DEMO_TIERS).map(k=>
-          `<option value="${k}"${k===gDemoTier?' selected':''}>${DEMO_TIERS[k].label}</option>`
-        ).join('')}
-      </select>
-    </div>`;
+    tierHtml = `<div class="tier-row">${Object.keys(DEMO_TIERS).map(k=>
+      `<div class="tier-p${k===gDemoTier?' on':''}" onclick="setDemoTier('${k}')">${DEMO_TIERS[k].pill}</div>`
+    ).join('')}</div>`;
   }
 
   document.getElementById('w').innerHTML = `
