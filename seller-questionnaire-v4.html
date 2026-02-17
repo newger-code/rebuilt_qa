@@ -421,15 +421,22 @@ function computeAll(){
   const yr = parseInt(gYr) || 0;
   const sf = parseInt(gSqft) || 0;
   const isDef = !hasTriageAnswers();
-  const letter = isDef && yr > 1800 ? defaultGrade(yr) : scoreToLetter(score);
   const hasProperty = yr > 1800 && yr <= 2026 && sf > 0;
+
+  // Display score: offset for G2S so slider reflects gut-job reality
+  // G2S mult 18 lives at ~score -33 on the curve. Offset -30 puts
+  // default (45) at 15 → right at F/D edge. Answers still shift it.
+  // Raw score feeds renoCalc untouched (mult floor does the real work).
+  const G2S_OFFSET = -30;
+  const displayScore = gOverride === 'gut2studs' ? score + G2S_OFFSET : score;
+  const letter = isDef && yr > 1800 ? defaultGrade(yr) : scoreToLetter(displayScore);
 
   let reno;
   if(gOverride === 'teardown'){
     // Tear Down: demo cost only (not a rehab — bulldoze the structure)
     reno = hasProperty ? demoCost(sf) : 0;
   } else {
-    // Normal or Gut2Studs (G2S mult floor handled inside renoCalc)
+    // Normal or Gut2Studs — raw score into renoCalc (G2S mult floor handled inside)
     reno = hasProperty ? renoCalc(yr, sf, score, isDef) : 0;
   }
 
@@ -440,7 +447,7 @@ function computeAll(){
   if(hasDispo){
     dispo = calculateDispoPrice(arv, reno, COUNTY_WT);
   }
-  return { score, yr, sf, isDef, letter, hasProperty, reno, arv, hasDispo, dispo };
+  return { score: displayScore, yr, sf, isDef, letter, hasProperty, reno, arv, hasDispo, dispo };
 }
 
 // Debounced render for text inputs — patches DOM directly
