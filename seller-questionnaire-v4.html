@@ -274,9 +274,12 @@ function renoCalc(yearBuilt, sqft, score, isDef){
     if(score < pts[0].s) mult = pts[0].m;
   }
 
-  // Gut2Studs override: floor multiplier at 18 (interior gutted = minimum heavy scope)
+  // Gut2Studs: ADD gut-scope on top of condition estimate.
+  // Not a floor — every answer shifts the number.
+  // +11 gives default pre-1975 (mult 7) → 18, same baseline as before.
+  // Bad answers stack: mult 13 → 24, mult 22 → 33 for worst-case.
   if(gOverride === 'gut2studs'){
-    mult = Math.max(18, mult);
+    mult += 11;
   }
 
   let base = factor * effSqft * mult;
