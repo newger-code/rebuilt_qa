@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rehab Formula Guide — How It Works</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+  *{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',-apple-system,sans-serif;}
+  body{background:#F1F5F9;color:#334155;padding:24px;line-height:1.6;}
+  .wrap{max-width:720px;margin:0 auto;}
+  h1{font-size:22px;font-weight:800;color:#1E293B;margin-bottom:4px;}
+  .sub{font-size:13px;color:#64748B;margin-bottom:24px;}
+  h2{font-size:16px;font-weight:700;color:#1E293B;margin:28px 0 10px;padding-bottom:4px;border-bottom:2px solid #E2E8F0;}
+  h3{font-size:13px;font-weight:700;color:#475569;margin:16px 0 6px;text-transform:uppercase;letter-spacing:.5px;}
+  p{font-size:13px;margin-bottom:10px;}
+  .card{background:#fff;border:1px solid #E2E8F0;border-radius:8px;padding:16px;margin-bottom:16px;
+    box-shadow:0 1px 3px rgba(0,0,0,.04);}
+  .highlight{background:#FFFBEB;border-color:#FDE68A;}
+  .callout{background:#EFF6FF;border-left:3px solid #2563EB;padding:10px 14px;border-radius:0 6px 6px 0;
+    font-size:12px;color:#1E40AF;margin:12px 0;}
+
+  /* Tables */
+  table{width:100%;border-collapse:collapse;font-size:12px;margin:8px 0 12px;}
+  th{background:#F8FAFC;text-align:left;padding:6px 10px;font-weight:700;color:#475569;
+    border-bottom:2px solid #E2E8F0;font-size:11px;text-transform:uppercase;letter-spacing:.3px;}
+  td{padding:5px 10px;border-bottom:1px solid #F1F5F9;}
+  tr:hover td{background:#F8FAFC;}
+  .num{text-align:right;font-weight:600;font-variant-numeric:tabular-nums;}
+  .pos{color:#059669;}.neg{color:#DC2626;}
+  .grade-a{color:#059669;font-weight:800;}.grade-b{color:#10B981;font-weight:800;}
+  .grade-c{color:#EAB308;font-weight:800;}.grade-d{color:#F97316;font-weight:800;}
+  .grade-f{color:#EF4444;font-weight:800;}
+
+  /* Example walkthrough */
+  .step{display:flex;gap:12px;margin:8px 0;align-items:flex-start;}
+  .step-n{width:24px;height:24px;background:#2563EB;color:#fff;border-radius:50%;font-size:11px;
+    font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;}
+  .step-t{font-size:12px;flex:1;}
+  .step-t strong{color:#1E293B;}
+  .math{font-family:'SF Mono',Consolas,monospace;font-size:11px;background:#F1F5F9;padding:6px 10px;
+    border-radius:4px;margin:6px 0;display:block;color:#475569;line-height:1.6;}
+
+  /* Mode badges */
+  .badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;
+    text-transform:uppercase;letter-spacing:.3px;}
+  .badge-td{background:#FEF2F2;color:#DC2626;border:1px solid #FECACA;}
+  .badge-g2s{background:#FFFBEB;color:#D97706;border:1px solid #FDE68A;}
+  .badge-normal{background:#DCFCE7;color:#166534;border:1px solid #BBF7D0;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>Rehab Estimate — How the Formula Works</h1>
+<p class="sub">Internal reference for the team. Plain English, no code.</p>
+
+<!-- ============================================ -->
+<h2>The Big Idea</h2>
+<div class="card highlight">
+  <p><strong>We don't add line items.</strong> Instead, each answer shifts the property's overall <em>condition score</em>, which drives a <strong>per-sqft multiplier</strong>. That multiplier prices the whole rehab as one number.</p>
+  <p>Why? Because rehab costs compound. A house that needs HVAC <em>and</em> roof <em>and</em> plumbing costs more per-sqft than just adding those three quotes. Systems interact, demo cascades, contractors mobilize once. The multiplier captures that naturally.</p>
+</div>
+
+<div class="callout">
+  Think of it like a credit score for the house. Each answer nudges the score up or down. The score determines what "tier" of rehab you're looking at — and the cost follows.
+</div>
+
+<!-- ============================================ -->
+<h2>Step 1 — Condition Score</h2>
+<p>Every property starts at a <strong>base score of 45</strong> (C territory — moderate). Each answer adds or subtracts points. The total score determines the grade.</p>
+
+<h3>Grade Bands</h3>
+<table>
+  <tr><th>Grade</th><th>Score Range</th><th>What It Means</th><th>Rough $/sqft</th></tr>
+  <tr><td><span class="grade-a">A</span></td><td class="num">80 – 100</td><td>Move-in ready, cosmetic only</td><td class="num">$3 – 4</td></tr>
+  <tr><td><span class="grade-b">B</span></td><td class="num">60 – 79</td><td>Minor — a few systems, mostly intact</td><td class="num">$5 – 8</td></tr>
+  <tr><td><span class="grade-c">C</span></td><td class="num">40 – 59</td><td>Moderate — multiple systems, kitchen or baths</td><td class="num">$8 – 14</td></tr>
+  <tr><td><span class="grade-d">D</span></td><td class="num">20 – 39</td><td>Heavy — most things need work</td><td class="num">$14 – 20</td></tr>
+  <tr><td><span class="grade-f">F</span></td><td class="num">Below 20</td><td>Gut-level or structural</td><td class="num">$20 – 30+</td></tr>
+</table>
+
+<h3>Scoring Weights — Every Answer</h3>
+<p>Here's exactly how many points each selection is worth:</p>
+
+<div class="card">
+<h3>Exterior</h3>
+<table>
+  <tr><th>Question</th><th>Option</th><th>Points</th></tr>
+  <tr><td rowspan="5">Roof Age</td><td>&lt;5 yrs</td><td class="num pos">+8</td></tr>
+  <tr><td>5–10 yrs</td><td class="num pos">+4</td></tr>
+  <tr><td>10–15 yrs</td><td class="num">0</td></tr>
+  <tr><td>15–20 yrs</td><td class="num neg">-4</td></tr>
+  <tr><td>20+ yrs</td><td class="num neg">-8</td></tr>
+  <tr><td rowspan="4">Roof Leaks</td><td>None</td><td class="num pos">+5</td></tr>
+  <tr><td>Past fix</td><td class="num">0</td></tr>
+  <tr><td>Active</td><td class="num neg">-12</td></tr>
+  <tr><td>Unsure</td><td class="num neg">-3</td></tr>
+  <tr><td rowspan="4">Windows</td><td>Vinyl</td><td class="num pos">+5</td></tr>
+  <tr><td>Mix</td><td class="num pos">+1</td></tr>
+  <tr><td>Original</td><td class="num neg">-4</td></tr>
+  <tr><td>Unsure</td><td class="num neg">-2</td></tr>
+  <tr><td rowspan="4">Siding/Paint</td><td>Good</td><td class="num pos">+4</td></tr>
+  <tr><td>Fair</td><td class="num">0</td></tr>
+  <tr><td>Poor</td><td class="num neg">-4</td></tr>
+  <tr><td>Unsure</td><td class="num neg">-1</td></tr>
+  <tr><td rowspan="4">Foundation Type</td><td>Slab</td><td class="num pos">+1</td></tr>
+  <tr><td>Crawl</td><td class="num">0</td></tr>
+  <tr><td>Basement</td><td class="num">0</td></tr>
+  <tr><td>Unsure</td><td class="num neg">-1</td></tr>
+  <tr><td rowspan="4">Foundation Issues</td><td>None</td><td class="num pos">+3</td></tr>
+  <tr><td>Minor</td><td class="num neg">-3</td></tr>
+  <tr><td>Major</td><td class="num neg">-15</td></tr>
+  <tr><td>Unsure</td><td class="num neg">-4</td></tr>
+</table>
+
+<h3>Systems</h3>
+<table>
+  <tr><th>Question</th><th>Option</th><th>Points</th></tr>
+  <tr><td rowspan="4">A/C Age</td><td>&lt;5 yrs</td><td class="num pos">+7</td></tr>
+  <tr><td>5–10 yrs</td><td class="num pos">+3</td></tr>
+  <tr><td>10–15 yrs</td><td class="num neg">-2</td></tr>
+  <tr><td>15+ yrs</td><td class="num neg">-7</td></tr>
+  <tr><td rowspan="5">Heat Source</td><td>Gas</td><td class="num pos">+2</td></tr>
+  <tr><td>Electric</td><td class="num">0</td></tr>
+  <tr><td>Heat Pump</td><td class="num pos">+3</td></tr>
+  <tr><td>Boiler</td><td class="num neg">-2</td></tr>
+  <tr><td>Unknown</td><td class="num neg">-2</td></tr>
+  <tr><td rowspan="4">Furnace Age</td><td>&lt;5 yrs</td><td class="num pos">+5</td></tr>
+  <tr><td>5–10 yrs</td><td class="num pos">+2</td></tr>
+  <tr><td>10–15 yrs</td><td class="num neg">-2</td></tr>
+  <tr><td>15+ yrs</td><td class="num neg">-5</td></tr>
+  <tr><td rowspan="3">Water Heater</td><td>&lt;5 yrs</td><td class="num pos">+2</td></tr>
+  <tr><td>5–10 yrs</td><td class="num">0</td></tr>
+  <tr><td>10+ yrs</td><td class="num neg">-2</td></tr>
+  <tr><td rowspan="4">Plumbing</td><td>Updated</td><td class="num pos">+5</td></tr>
+  <tr><td>Partial</td><td class="num pos">+1</td></tr>
+  <tr><td>Original</td><td class="num neg">-5</td></tr>
+  <tr><td>Unsure</td><td class="num neg">-2</td></tr>
+  <tr><td rowspan="3">Electrical</td><td>Breakers</td><td class="num pos">+4</td></tr>
+  <tr><td>Fuses</td><td class="num neg">-6</td></tr>
+  <tr><td>Unsure</td><td class="num neg">-2</td></tr>
+</table>
+
+<h3>Interior</h3>
+<table>
+  <tr><th>Question</th><th>Option</th><th>Points</th></tr>
+  <tr><td rowspan="3">Kitchen Remodel</td><td>Updated</td><td class="num pos">+8</td></tr>
+  <tr><td>Partial</td><td class="num pos">+1</td></tr>
+  <tr><td>No</td><td class="num neg">-5</td></tr>
+  <tr><td rowspan="3">Kitchen Updated Yr</td><td>&lt;5 yrs</td><td class="num pos">+3</td></tr>
+  <tr><td>5–10 yrs</td><td class="num pos">+1</td></tr>
+  <tr><td>10+ yrs</td><td class="num neg">-2</td></tr>
+  <tr><td rowspan="4">Countertops</td><td>Granite</td><td class="num pos">+3</td></tr>
+  <tr><td>Formica</td><td class="num neg">-1</td></tr>
+  <tr><td>Laminate</td><td class="num neg">-2</td></tr>
+  <tr><td>Unknown</td><td class="num neg">-1</td></tr>
+  <tr><td rowspan="3">Bath Remodel</td><td>Updated</td><td class="num pos">+6</td></tr>
+  <tr><td>Partial</td><td class="num pos">+1</td></tr>
+  <tr><td>No</td><td class="num neg">-4</td></tr>
+  <tr><td rowspan="3">Bath Updated Yr</td><td>&lt;5 yrs</td><td class="num pos">+3</td></tr>
+  <tr><td>5–10 yrs</td><td class="num pos">+1</td></tr>
+  <tr><td>10+ yrs</td><td class="num neg">-2</td></tr>
+  <tr><td rowspan="3">Flooring</td><td>Updated</td><td class="num pos">+4</td></tr>
+  <tr><td>Partial</td><td class="num pos">+1</td></tr>
+  <tr><td>Original</td><td class="num neg">-3</td></tr>
+  <tr><td rowspan="3">Flooring Updated Yr</td><td>&lt;5 yrs</td><td class="num pos">+2</td></tr>
+  <tr><td>5–10 yrs</td><td class="num pos">+1</td></tr>
+  <tr><td>10+ yrs</td><td class="num neg">-1</td></tr>
+</table>
+</div>
+
+<div class="callout">
+  <strong>Streak bonus:</strong> If 65%+ of answers are positive, you get a small bonus (up to +7 pts). If 65%+ are negative, a penalty (up to -7 pts). This captures the "everything is bad" compounding effect.
+</div>
+
+<!-- ============================================ -->
+<h2>Step 2 — Score → Multiplier</h2>
+<p>The score maps to a <strong>multiplier</strong> on a smooth curve. This isn't a hard grade band — it slides continuously so the estimate never "jumps" between grades.</p>
+
+<table>
+  <tr><th>Score</th><th>Multiplier</th><th>Grade Zone</th></tr>
+  <tr><td class="num">100</td><td class="num">2</td><td><span class="grade-a">A</span> — cosmetic</td></tr>
+  <tr><td class="num">80</td><td class="num">2</td><td><span class="grade-a">A</span> — move-in</td></tr>
+  <tr><td class="num">60</td><td class="num">4</td><td><span class="grade-b">B</span> — minor</td></tr>
+  <tr><td class="num">40</td><td class="num">7</td><td><span class="grade-c">C</span> — moderate</td></tr>
+  <tr><td class="num">20</td><td class="num">10</td><td><span class="grade-d">D</span> — heavy</td></tr>
+  <tr><td class="num">0</td><td class="num">13</td><td><span class="grade-f">F</span> — gut</td></tr>
+  <tr><td class="num">-60</td><td class="num">22</td><td><span class="grade-f">F⁻</span> — worst case structural</td></tr>
+</table>
+
+<p>Between these anchor points, the multiplier interpolates smoothly. Score 50 = multiplier ~5.5, not a hard jump from 7 to 4.</p>
+
+<!-- ============================================ -->
+<h2>Step 3 — The Final Calculation</h2>
+<div class="card">
+  <span class="math">
+    Est. Rehab = age_factor × sqft × multiplier + boost
+  </span>
+  <p><strong>Age factor:</strong> Older homes cost more per-sqft to rehab (older materials, code upgrades, surprises). A 1970 home ≈ 2.3x, a 1990 home ≈ 1.8x, a 2010 home ≈ 0.8x.</p>
+  <p><strong>Sqft:</strong> Minimum 1,200 sqft floor (smaller homes still have base system costs).</p>
+  <p><strong>Boost:</strong> Newer homes (&lt;40 yrs) in bad condition get a bonus — systems are fresher but cosmetically wrecked, so there's a floor on rehab cost even for "young" homes.</p>
+</div>
+
+<!-- ============================================ -->
+<h2>Worked Example</h2>
+<div class="card">
+  <p><strong>Property:</strong> 1970 build, 1,400 sqft</p>
+
+  <div class="step"><span class="step-n">1</span><div class="step-t">Start at <strong>score 45</strong> (C territory)</div></div>
+
+  <div class="step"><span class="step-n">2</span><div class="step-t">Seller says: Roof 20+ yrs (<strong>-8</strong>), Active leaks (<strong>-12</strong>), Original plumbing (<strong>-5</strong>), Fuse box (<strong>-6</strong>), No kitchen remodel (<strong>-5</strong>)<br>
+  <span class="math">45 - 8 - 12 - 5 - 6 - 5 = <strong>9</strong> → Grade F</span></div></div>
+
+  <div class="step"><span class="step-n">3</span><div class="step-t">Score 9 → multiplier ≈ <strong>11.7</strong> (between anchors 0→13 and 20→10)</div></div>
+
+  <div class="step"><span class="step-n">4</span><div class="step-t">Age factor for 1970 = <strong>2.33</strong><br>
+  <span class="math">2.33 × 1,400 × 11.7 = <strong>$38,177</strong></span></div></div>
+
+  <div class="step"><span class="step-n">5</span><div class="step-t">Now seller also says: Foundation major issues (<strong>-15</strong>), Original windows (<strong>-4</strong>)<br>
+  <span class="math">9 - 15 - 4 = <strong>-10</strong> → still Grade F, but deeper</span>
+  Multiplier at -10 ≈ <strong>15.2</strong><br>
+  <span class="math">2.33 × 1,400 × 15.2 = <strong>$49,594</strong></span>
+  Added ~$11k just from two more answers. The foundation hit (-15) is the biggest single-answer swing in the system.</div></div>
+</div>
+
+<!-- ============================================ -->
+<h2>Override Modes</h2>
+
+<div class="card">
+  <p><span class="badge badge-g2s">Gut 2 Studs</span> <strong>adds +11 to the multiplier</strong> on top of whatever the condition score gives. This represents "we're gutting the entire interior regardless." Answers still shift the number — bad exterior/systems stack on top of the gut scope.</p>
+  <table>
+    <tr><th>Scenario (1970, 1,400 sqft)</th><th>Normal</th><th>G2S</th></tr>
+    <tr><td>Default, no answers</td><td class="num">$22,800</td><td class="num">$58,800</td></tr>
+    <tr><td>A few bad answers (score 20)</td><td class="num">$32,600</td><td class="num">$68,500</td></tr>
+    <tr><td>Many bad answers (score -10)</td><td class="num">$49,600</td><td class="num">$85,500</td></tr>
+    <tr><td>Worst case (score -40)</td><td class="num">$64,200</td><td class="num">$100,100</td></tr>
+  </table>
+</div>
+
+<div class="card">
+  <p><span class="badge badge-td">Tear Down</span> <strong>replaces the rehab formula entirely</strong> with demo-only cost. The questionnaire doesn't affect it — just sqft and market tier.</p>
+  <table>
+    <tr><th>Tier</th><th>Base</th><th>Per Sqft</th><th>1,400 sqft</th><th>2,500 sqft</th></tr>
+    <tr><td>Low (rural)</td><td class="num">$3,500</td><td class="num">$4.00</td><td class="num">$9,100</td><td class="num">$13,500</td></tr>
+    <tr><td>Mid (average)</td><td class="num">$4,000</td><td class="num">$5.00</td><td class="num">$11,000</td><td class="num">$16,500</td></tr>
+    <tr><td>High (coastal/big market)</td><td class="num">$5,000</td><td class="num">$6.50</td><td class="num">$14,100</td><td class="num">$21,250</td></tr>
+    <tr><td>Enviro (asbestos/lead)</td><td class="num">$10,000</td><td class="num">$13.00</td><td class="num">$28,200</td><td class="num">$42,500</td></tr>
+  </table>
+</div>
+
+<!-- ============================================ -->
+<h2>FAQ for the Team</h2>
+<div class="card">
+  <p><strong>"I selected HVAC 15+ but the estimate only went up $3k, not $8k for a new unit?"</strong><br>
+  Correct. The -7 points shifts the overall condition tier. Some of that HVAC cost is already baked into the per-sqft rate at the current grade. You're not adding a line item — you're telling the model the property is in worse overall shape.</p>
+
+  <p><strong>"Why does Foundation Major (-15) hit so much harder than anything else?"</strong><br>
+  Because foundation work is the most expensive single trade, affects everything above it, and signals hidden problems. It's intentionally the heaviest weight in the system.</p>
+
+  <p><strong>"The score went negative — is that a bug?"</strong><br>
+  No. Negative scores represent truly terrible properties where nearly everything is bad. The multiplier keeps climbing into "worst case structural" territory (up to 22). The gauge slider pins at the left edge.</p>
+
+  <p><strong>"Why does the same answer change the estimate by different amounts depending on what else I've selected?"</strong><br>
+  Because the multiplier curve isn't linear. Going from score 60→53 (B→C transition) is a bigger $/sqft jump than going from 30→23 (already deep in D). The worse things already are, the less each additional bad answer moves the needle — diminishing returns, just like real rehab.</p>
+</div>
+
+<p style="font-size:10px;color:#94A3B8;margin-top:24px;text-align:center;">
+  Rebuilt QA — Internal Formula Reference · v4
+</p>
+
+</div>
+</body>
+</html>
